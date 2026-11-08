@@ -37,7 +37,7 @@ docker compose up -d
 
 打开 http://NAS内网IP:8765。可在“影片文件夹”管理已挂载目录中的文件夹。新增挂载范围需要更新 Compose。
 
-默认提供局域网访问，打开页面即可浏览已挂载影片。公网暴露应按使用者的访问控制要求配置。INSV 原片需先通过相机软件导出 2:1 全景 MP4/MOV。
+默认提供局域网访问，打开页面即可浏览已挂载影片。公网暴露应按使用者的访问控制要求配置。INSV 原片需先通过 Insta360 Studio 导出 2:1 全景 MP4。步骤见 [Insta360 Studio 导出指引](skills/pano-room-install/references/insta360-export.md)。
 
 ## 验证与已有部署更新
 
