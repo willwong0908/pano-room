@@ -16,6 +16,16 @@ Codex 用户可通过 skill-installer 安装上面的 GitHub Skill 路径。安�
 
 Skill 自带软件源码、部署目录生成脚本和极空间部署指引。操作 NAS 需要可用的极空间连接工具或用户授权的 SSH。推荐配合 zspace-nas-agent-toolkit，授权由其 OAuth 流程完成。
 
+## 国内镜像
+
+国内用户可以从 [Gitee 镜像](https://gitee.com/willwong0908/pano-room) 获取完整源码和安装 Skill：
+
+~~~sh
+git clone https://gitee.com/willwong0908/pano-room.git
+~~~
+
+把下载后的 skills/pano-room-install 目录交给支持本地 Skill 的 Agent 安装。向 Agent 说明：“请读取这个 Skill，帮我将环映安装到极空间。” Gitee 镜像使用仓库页面上的同步入口更新，可能与 GitHub 有时间差。
+
 ## 手动 Docker Compose 部署
 
 需要 Python 3.10+ 生成部署目录，以及 Docker Compose。先查询目标机器上的媒体目录与局域网地址，替换下面的示例值。
