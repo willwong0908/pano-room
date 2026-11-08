@@ -1,5 +1,6 @@
 """环映原画播放器：只读全景 MP4/MOV，HTTP Range 直读原文件。"""
 import concurrent.futures
+import rolling
 import hashlib
 import json
 import mimetypes
@@ -248,7 +249,26 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             route = urlsplit(self.path)
-            if route.path == "/api/folders":
+            if match := re.fullmatch(r"/api/playback-test/([a-f0-9]{24})", route.path):
+                origin = self.headers.get("Origin")
+                size = int(self.headers.get("Content-Length", "0"))
+                if origin and urlsplit(origin).netloc != self.headers.get("Host"):
+                    return self.json({"message":"来源不匹配"},403)
+                if not 0 < size <= 12000:
+                    return self.json({"message":"数据过大"},400)
+                report = json.loads(self.rfile.read(size))
+                if not isinstance(report,dict) or not isinstance(report.get("rounds"),list):
+                    raise ValueError("无效报告")
+                target = CACHE/"phone-tests"
+                target.mkdir(exist_ok=True)
+                with LOCK:
+                    with tempfile.NamedTemporaryFile(mode="w",dir=target,delete=False) as f:
+                        json.dump(report,f,ensure_ascii=False)
+                    Path(f.name).replace(target/(match[1]+".json"))
+                    for old in sorted(target.glob("*.json"),key=lambda p:p.stat().st_mtime,reverse=True)[32:]:
+                        old.unlink()
+                self.json({"ok":True})
+            elif route.path == "/api/folders":
                 if self.headers.get("Origin") and urlsplit(self.headers["Origin"]).netloc != self.headers.get("Host"):
                     self.json({"message": "请从环映网页操作。"}, 403)
                     return
@@ -281,7 +301,7 @@ class Handler(BaseHTTPRequestHandler):
             elif route.path == "/api/lan":
                 self.json({"instance_id": INSTANCE_ID}, cors=True)
             elif route.path == "/api/health":
-                self.json({"ok": any(r["path"].is_dir() for r in ROOTS.values()), "version": "0.4.1"})
+                self.json({"ok": any(r["path"].is_dir() for r in ROOTS.values()), "version": "0.5.0"})
             elif route.path == "/api/folders":
                 self.json(folder_config())
             elif route.path == "/api/directories":
@@ -305,6 +325,16 @@ class Handler(BaseHTTPRequestHandler):
             elif re.fullmatch(r"/source/[a-f0-9]{24}", route.path):
                 key = route.path.rsplit("/", 1)[-1]
                 self.file(source_for(key))
+            elif match := re.fullmatch(r"/hls/([a-f0-9]{24})/(index\.m3u8|init\.mp4|[0-9]{1,9}\.m4s)", route.path):
+                key, resource = match.groups()
+                rolling.serve(self, source_for(key), key, resource)
+            elif route.path == "/auto-test.js":
+                self.file(APP/"auto.js","application/javascript")
+            elif match := re.fullmatch(r"/api/playback-test/([a-f0-9]{24})", route.path):
+                path = CACHE/"phone-tests"/(match[1]+".json")
+                self.json(json.loads(path.read_text()) if path.exists() else {"status":"尚未连接"})
+            elif route.path == "/hls.min.js":
+                self.file(APP / "hls.min.js", "application/javascript")
             elif route.path in {"/", "/index.html"}:
                 self.file(APP/"index.html", "text/html; charset=utf-8")
             else:

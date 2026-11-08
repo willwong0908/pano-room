@@ -2,7 +2,7 @@
 
 运行在极空间 Docker Compose 中的 360° 全景片库与原画播放器。
 
-支持已拼接的 2:1 全景 MP4/MOV。浏览器和极空间 App 可拖动环视、跳转进度、回正视角和全屏。视频以原文件通过 HTTP Range 传输，支持 8K，实际解码能力和 HDR 显示取决于播放设备。
+支持已拼接的 2:1 全景 MP4/MOV。浏览器和极空间 App 可拖动环视、跳转进度、回正视角和全屏。支持 8K 原画。NAS 按关键帧读取原视频，浏览器边播边预读，可拖动进度、双指缩放；支持的桌面浏览器也可用滚轮缩放。播放设备负责解码，实际流畅度和 HDR 显示取决于设备、浏览器和网络。
 
 访问入口会自动探测配置的 NAS 局域网服务，核对同一部署标识后自动直连。超时或探测受系统限制时继续使用代理。媒体目录只读挂载，目录配置、部署标识、缩略图和元信息保存在 cache 中。
 
@@ -15,6 +15,16 @@
 Codex 用户可通过 skill-installer 安装上面的 GitHub Skill 路径。安装后的调用示例为“使用 $pano-room-install 把环映安装到我的极空间”。
 
 Skill 自带软件源码、部署目录生成脚本和极空间部署指引。操作 NAS 需要可用的极空间连接工具或用户授权的 SSH。推荐配合 zspace-nas-agent-toolkit，授权由其 OAuth 流程完成。
+
+## 让 Agent 更新已有安装
+直接告诉 Agent：
+
+> 请检查 https://github.com/willwong0908/pano-room 的 VERSION，与我极空间上环映的 /api/health 版本比较。如果有新版，读取该版本的 skills/pano-room-install/SKILL.md，保留现有影片目录、缓存配置、端口和快捷方式，升级后用我的一段全景视频验证。国内可用 https://gitee.com/willwong0908/pano-room 。
+
+不用 Star、Watch 或重新安装 NAS 应用。旧 Skill 是本地副本，更新时应重新读取仓库同一提交的 Skill 和运行文件。关注仓库不会触发 NAS 自动升级。
+
+## 0.5.0 的播放与缓存
+支持 HLS.js 的客户端在播放时继续预读，跳转后优先读取新位置附近的片段。预读使用客户端临时空间，剩余容量或浏览器配额不足时可能无法读完整片。返回片库、切换影片或正常离开页面时会尝试释放临时缓存；异常退出可能要等下次打开再清理。原生播放回退时由浏览器管理缓冲。NAS 不生成另一份 8K 视频。
 
 ## 国内镜像
 
@@ -61,6 +71,6 @@ python3 -m unittest discover -s tests -v
 
 ## 源码与许可
 
-软件的唯一源码位于 skills/pano-room-install/assets/runtime/app。Skill 被单独安装时，这些文件会一起携带。prepare.py 复制这些资源并按目标机器生成配置。
+播放器源码位于 skills/pano-room-install/assets/runtime/app，Go 分段索引器源码和锁定依赖位于 skills/pano-room-install/assets/indexer。Skill 被单独安装时，这些文件会一起携带。prepare.py 复制这些资源并按目标机器生成配置。
 
 AGPL-3.0-or-later。全景投影参考 wizcs/files_360viewer，来源及快照见 NOTICE，许可证见 LICENSE。

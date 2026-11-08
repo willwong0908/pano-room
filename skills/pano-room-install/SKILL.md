@@ -29,7 +29,9 @@ python3 scripts/prepare.py \
 
 ## 更新
 
-先检查现有 Compose、挂载和 cache/folders.json。保留用户的目录配置、部署标识和原片，在暂存目录准备更新。替换应用源码并重启对应容器。旧部署使用 m2/sata 目录键时，应在 MEDIA_ROOTS 中保留相同键和容器路径，以兼容现有 folders.json。将现有 LAN_URL、端口与媒体挂载带入新配置。
+从 GitHub 的 willwong0908/pano-room（国内镜像 Gitee 同名仓库）读取 main 的 VERSION 并记录提交号，再读取该提交的 Skill 与运行文件。比较目标服务 /api/health 的 version：相同则报告已是该版，不重启；目标较新则不降级；发现新版时按用户的更新授权继续。无法访问仓库时报告未能检查，不把本地旧 Skill 当作最新版。
+
+先检查现有 Compose、挂载和 cache/folders.json。保留用户的目录配置、部署标识和原片，在暂存目录准备更新。替换应用源码并重启对应容器。旧部署使用 m2/sata 目录键时，应在 MEDIA_ROOTS 中保留相同键和容器路径，以兼容现有 folders.json。保留现有 Compose、.env、LAN_URL、端口、快捷方式与所有卷；备份旧 app/ 后，将本版本 assets/runtime/app/ 完整复制至既有挂载目录。若以目录换名替换 bind mount，需重新创建服务使挂载生效；使用构建镜像的项目还需重新构建。检查 /api/health 返回目标版本且 ok 为真、片库和目录仍在，并从真实样片读取 /hls/<id>/index.m3u8、init.mp4 和一个媒体片段。失败时恢复原应用目录或旧镜像并重新创建服务，保留 cache 和原片。
 
 ## 验收边界
 

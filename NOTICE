@@ -2,4 +2,5 @@
 全景投影参考 wizcs/files_360viewer
 https://github.com/wizcs/files_360viewer
 参考快照 57c9197b903cf9675f33cafddb0de6d61495999a
+HLS.js 1.6.16、mp4ff v0.62.0 和 Go 运行时保留各自许可证，见 skills/pano-room-install/assets/runtime/app/*LICENSE*。
 本仓库采用 AGPL-3.0-or-later。完整许可证见 LICENSE。

@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
 import threading
 import unittest
@@ -9,6 +10,8 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills/pano-room-install"
+
+sys.path.insert(0, str(SKILL / "assets/runtime/app"))
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
