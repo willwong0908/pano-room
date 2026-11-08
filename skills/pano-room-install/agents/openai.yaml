@@ -1,0 +1,4 @@
+interface:
+  display_name: "环映安装助手"
+  short_description: "在极空间部署环映全景播放器，配置影片目录和局域网优先连接"
+  default_prompt: "使用 $pano-room-install 把环映安装到我的极空间，并验证影片目录与原画播放。"
