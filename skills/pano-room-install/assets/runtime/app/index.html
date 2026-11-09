@@ -12,6 +12,7 @@
 /* iPhone 上让视频保持参与排版，WebGL 收到新帧后在它上方绘制全景。 */
 #stage > #film, #stage > #view { position:absolute; inset:0; width:100%; height:100%; }
 #stage > #film { display:block; object-fit:contain; pointer-events:none; }
+.sensor-controls{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px}.sensor-button{height:44px;padding:0 15px;border-radius:24px;background:#242426dd;color:white;font-size:13px}.sensor-button[aria-pressed="true"]{background:#fff;color:#1c1c1e}.sensor-status{position:absolute;top:64px;left:12px;max-width:min(310px,calc(100% - 24px));padding:8px 12px;border-radius:10px;background:#242426e8;color:#fff;font-size:12px}.sensor-status:empty{display:none}
 .zoom-controls{position:absolute;top:12px;right:12px;display:flex;align-items:center;background:#242426dd;color:#fff;border-radius:24px;font-variant-numeric:tabular-nums}
 .zoom-controls button{width:44px;height:44px;display:grid;place-items:center;color:inherit;font:22px/1 system-ui;padding:0}
 .zoom-controls button:disabled{opacity:.35}.zoom-controls span{min-width:4ch;text-align:center;font-size:12px}
@@ -21,7 +22,7 @@
 <main class="content"><div class="top"><div class="crumb"><button id="home">全景视频</button><span id="breadcrumb"></span></div><div class="top-actions"><button class="folder-settings-button" id="manage-folders">影片文件夹</button><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="search" placeholder="搜索视频" aria-label="搜索视频"></label></div></div><h1 class="title" id="title">全部视频</h1>
 <div class="covers" id="folders"><button class="cover" data-folder="相机原片"><img id="folderimg0" alt=""><div><strong>相机原片</strong><small>1 段视频</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button><button class="cover" data-folder="示例片段"><img id="folderimg1" alt=""><div><strong>示例片段</strong><small>3 段视频</small></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
 <div class="linehead"><h2>视频<span class="count" id="count">4 项</span></h2><select class="sort" id="sort" aria-label="排序"><option value="default">目录顺序</option><option value="name">名称排序</option><option value="duration">时长排序</option></select></div><div class="cols"><span>名称</span><span>拍摄日期</span><span>时长</span><span>大小</span><span></span></div><div id="rows"></div></main></div>
-<main id="player" class="player" hidden><button id="return" class="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>返回片库</button><h1 id="playingtitle">全景播放</h1><p class="details" id="playingdetail"></p><div class="stage" id="stage"><video id="film" playsinline preload="metadata" aria-hidden="true"></video><canvas id="view" tabindex="0" aria-label="拖动环视全景，方向键调整视角"></canvas><div class="zoom-controls" role="group" aria-label="视角缩放"><button id="zoom-out" aria-label="缩小" title="缩小">−</button><span id="zoom-value">1×</span><button id="zoom-in" aria-label="放大" title="放大">+</button></div><div class="err" id="err" role="status"></div><div class="controls"><button id="play" aria-label="播放"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg></button><span id="elapsed">0:00</span><input type="range" id="seek" aria-label="播放进度" value="0" min="0" max="5.36" step=".01"><span id="total">0:05</span><button id="reset" title="视角回正" aria-label="视角回正"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 8M4 4v6h6"/></svg></button><button id="full" title="全屏" aria-label="全屏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5"/></svg></button></div></div><div class="caption"><span>拖动环视 · 双指或滚轮缩放</span><span id="preload-state"></span><span id="filename"></span></div></main><dialog id="folder-dialog" aria-labelledby="folder-dialog-title"><div class="dialog-head"><h2 id="folder-dialog-title">影片文件夹</h2><button id="close-folders" aria-label="关闭">×</button></div><div class="dialog-content"><section id="manage-view"><p class="dialog-caption">添加存放全景影片的文件夹，子文件夹中的影片也会显示在片库。</p><div id="selected-folders"></div><div class="dialog-footer"><button id="add-folder" class="dialog-primary">添加文件夹</button></div></section><section id="browse-view" hidden><button id="back-settings" class="folder-back">‹ 返回影片文件夹</button><div class="browse-header"><button id="up-folder" aria-label="上一级">↑</button><strong id="browse-location"></strong></div><div id="directory-list" class="directory-list"></div><div class="dialog-footer"><button id="add-current" class="dialog-primary">添加此文件夹</button></div></section><p id="folder-error" class="folder-error" role="status"></p></div></dialog>
+<main id="player" class="player" hidden><button id="return" class="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>返回片库</button><h1 id="playingtitle">全景播放</h1><p class="details" id="playingdetail"></p><div class="stage" id="stage"><video id="film" playsinline preload="metadata" aria-hidden="true"></video><canvas id="view" tabindex="0" aria-label="拖动环视全景，方向键调整视角"></canvas><div class="sensor-controls"><button id="sensor" class="sensor-button" aria-pressed="false">体感</button></div><div id="sensor-status" class="sensor-status" role="status"></div><div class="zoom-controls" role="group" aria-label="视角缩放"><button id="zoom-out" aria-label="缩小" title="缩小">−</button><span id="zoom-value">1×</span><button id="zoom-in" aria-label="放大" title="放大">+</button></div><div class="err" id="err" role="status"></div><div class="controls"><button id="play" aria-label="播放"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg></button><span id="elapsed">0:00</span><input type="range" id="seek" aria-label="播放进度" value="0" min="0" max="5.36" step=".01"><span id="total">0:05</span><button id="reset" title="视角回正" aria-label="视角回正"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 8M4 4v6h6"/></svg></button><button id="full" title="全屏" aria-label="全屏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5"/></svg></button></div></div><div class="caption"><span>拖动环视 · 双指或滚轮缩放</span><span id="preload-state"></span><span id="filename"></span></div></main><dialog id="folder-dialog" aria-labelledby="folder-dialog-title"><div class="dialog-head"><h2 id="folder-dialog-title">影片文件夹</h2><button id="close-folders" aria-label="关闭">×</button></div><div class="dialog-content"><section id="manage-view"><p class="dialog-caption">添加存放全景影片的文件夹，子文件夹中的影片也会显示在片库。</p><div id="selected-folders"></div><div class="dialog-footer"><button id="add-folder" class="dialog-primary">添加文件夹</button></div></section><section id="browse-view" hidden><button id="back-settings" class="folder-back">‹ 返回影片文件夹</button><div class="browse-header"><button id="up-folder" aria-label="上一级">↑</button><strong id="browse-location"></strong></div><div id="directory-list" class="directory-list"></div><div class="dialog-footer"><button id="add-current" class="dialog-primary">添加此文件夹</button></div></section><p id="folder-error" class="folder-error" role="status"></p></div></dialog>
 <script src="/hls.min.js"></script><script>const ICONS={"play": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 5v14l11-7z\" fill=\"currentColor\" stroke=\"none\"/></svg>", "pause": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 5v14M16 5v14\" stroke-width=\"4\"/></svg>", "folder": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 7a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9H3z\"/></svg>", "grid": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"4\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"4\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/></svg>", "search": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"10\" cy=\"10\" r=\"6\"/><path d=\"m15 15 5 5\"/></svg>", "chevron": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 5 7 7-7 7\"/></svg>", "back": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m15 5-7 7 7 7\"/></svg>", "reset": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 10a8 8 0 1 1 1 8M4 4v6h6\"/></svg>", "full": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5\"/></svg>", "logo": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><ellipse cx=\"12\" cy=\"12\" rx=\"11\" ry=\"4\" transform=\"rotate(-35 12 12)\"/></svg>"};
 const el=id=>document.getElementById(id);
 // 探测当前部署的局域网入口，失败时沿用打开页面时的代理通道。
@@ -141,6 +142,7 @@ g.bindTexture(g.TEXTURE_2D,g.createTexture());for(const k of [g.TEXTURE_MIN_FILT
 const cam=g.getUniformLocation(program,'cam');const viewScale=g.getUniformLocation(program,'viewScale');let yaw=-2.35,pitch=.06,zoom=1;
 // 视角和视频帧独立更新：同一帧在 GPU 上只存一份。
 let frameCanvas=null, frameContext=null, uploadPath='probe', textureReady=false;
+const textureLimit=g.getParameter(g.MAX_TEXTURE_SIZE);
 let frameHandle=null, viewHandle=null, lastFallbackFrame=null;
 function paint(){
  if(!textureReady||v.readyState<2)return;
@@ -154,14 +156,17 @@ function draw(){
 }
 function presentFrame(){
  if(autoFlat||v.readyState<2||!v.videoWidth)return;
+ const ratio=Math.min(1,textureLimit/Math.max(v.videoWidth,v.videoHeight));
+ if(ratio<1)uploadPath='canvas';
  if(uploadPath!=='canvas'){
   g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,v);
   if(uploadPath==='probe')uploadPath=g.getError()===g.NO_ERROR?'video':'canvas';
  }
  if(uploadPath==='canvas'){
   if(!frameCanvas){frameCanvas=document.createElement('canvas');frameContext=frameCanvas.getContext('2d',{alpha:false})}
-  if(frameCanvas.width!==v.videoWidth||frameCanvas.height!==v.videoHeight){frameCanvas.width=v.videoWidth;frameCanvas.height=v.videoHeight}
-  frameContext.drawImage(v,0,0);g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,frameCanvas);
+  const width=Math.max(1,Math.floor(v.videoWidth*ratio)),height=Math.max(1,Math.floor(v.videoHeight*ratio));
+  if(frameCanvas.width!==width||frameCanvas.height!==height){frameCanvas.width=width;frameCanvas.height=height}
+  frameContext.drawImage(v,0,0,width,height);g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,frameCanvas);
  }
  textureReady=true;
  if(viewHandle!==null){cancelAnimationFrame(viewHandle);viewHandle=null}
@@ -182,6 +187,46 @@ v.onloadeddata=presentFrame;v.onseeked=presentFrame;v.addEventListener('waiting'
 new ResizeObserver(draw).observe(c);v.onerror=()=>{ if(!streamer && selectedId) showSourceOption('系统播放器无法读取此分段。'); };
 el('play').onclick=()=>v.paused?v.play().catch(()=>fail('播放失败，请重新打开预览。')):v.pause();
 v.ontimeupdate=()=>{el('seek').value=v.currentTime;el('seek').style.setProperty('--pct',(v.currentTime/v.duration*100)+'%');el('elapsed').textContent=stamp(v.currentTime)};
+// 以打开体感时的手机朝向作为基准，拖动仍可微调视角。
+let sensorActive=false,sensorBase=null,sensorTimer=null;
+const sensorButton=el('sensor'),sensorStatus=el('sensor-status');
+function stopSensor(message=''){
+ sensorActive=false;sensorBase=null;clearTimeout(sensorTimer);
+ window.removeEventListener('deviceorientation',onOrientation);
+ sensorButton.setAttribute('aria-pressed','false');sensorStatus.textContent=message;
+}
+function onOrientation(e){
+ if(!sensorActive||![e.alpha,e.beta,e.gamma].every(Number.isFinite))return;
+ clearTimeout(sensorTimer);sensorStatus.textContent='';
+ const a=e.alpha*Math.PI/180,b=e.beta*Math.PI/180,d=e.gamma*Math.PI/180;
+ // 将手机的观察方向从设备坐标变换到世界坐标；取相对朝向，无需罗盘权限。
+ const x=Math.cos(a)*Math.sin(d)+Math.sin(a)*Math.sin(b)*Math.cos(d);
+ const y=Math.cos(b)*Math.cos(d);
+ const z=-Math.sin(a)*Math.sin(d)+Math.cos(a)*Math.sin(b)*Math.cos(d);
+ const heading=Math.atan2(x,z),tilt=Math.asin(Math.max(-1,Math.min(1,y)));
+ if(!sensorBase){sensorBase={heading,tilt,yaw,pitch};return}
+ const delta=Math.atan2(Math.sin(heading-sensorBase.heading),Math.cos(heading-sensorBase.heading));
+ yaw=sensorBase.yaw+delta;
+ pitch=Math.max(-1.4,Math.min(1.4,sensorBase.pitch+tilt-sensorBase.tilt));
+ draw();
+}
+sensorButton.onclick=async()=>{
+ if(sensorActive){stopSensor();return}
+ if(!window.isSecureContext){stopSensor('体感需要 HTTPS 安全连接，请用支持 HTTPS 的入口打开。');return}
+ if(!('DeviceOrientationEvent' in window)){stopSensor('当前浏览器不支持体感，请使用手势环视。');return}
+ try{
+  if(typeof DeviceOrientationEvent.requestPermission==='function' &&
+     await DeviceOrientationEvent.requestPermission()!=='granted'){
+   stopSensor('未获得运动与方向权限，请在浏览器设置中允许。');return;
+  }
+  sensorActive=true;sensorBase=null;sensorButton.setAttribute('aria-pressed','true');
+  sensorStatus.textContent='正在连接体感…';
+  window.addEventListener('deviceorientation',onOrientation);
+  sensorTimer=setTimeout(()=>stopSensor('未收到传感器数据，请检查权限或更换浏览器。'),5000);
+ }catch(e){stopSensor('无法启用体感，请检查浏览器权限。')}
+};
+el('return').addEventListener('click',()=>stopSensor());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSensor()});
 const pointers = new Map();
 function setZoom(value) {
  zoom = Math.max(.5, Math.min(4, value));
@@ -209,6 +254,7 @@ c.onpointermove = e => {
   const after = pinchDistance();
   if (before > 2 && after > 2) setZoom(zoom * after / before);
  } else {
+  sensorBase=null;
   yaw -= (e.clientX-old.x)*.004/zoom;
   pitch = Math.max(-1.4, Math.min(1.4, pitch+(e.clientY-old.y)*.004/zoom));
   draw();
@@ -223,7 +269,7 @@ c.addEventListener('wheel', e => {
 el('zoom-out').onclick = () => setZoom(zoom/Math.SQRT2);
 el('zoom-in').onclick = () => setZoom(zoom*Math.SQRT2);
 c.onkeydown=e=>{const delta={ArrowLeft:[-.08,0],ArrowRight:[.08,0],ArrowUp:[0,.08],ArrowDown:[0,-.08]}[e.key];if(delta){e.preventDefault();yaw+=delta[0];pitch=Math.max(-1.4,Math.min(1.4,pitch+delta[1]));draw()}};
-el('reset').onclick=()=>{yaw=-2.35;pitch=.06;setZoom(1)};
+el('reset').onclick=()=>{yaw=-2.35;pitch=.06;sensorBase=null;setZoom(1)};
 const stage=el('stage');
 function expanded(value){stage.classList.toggle('expanded',value);document.body.style.overflow=value?'hidden':'';el('full').setAttribute('aria-label',value?'退出全屏':'全屏');el('full').title=value?'退出全屏':'全屏';draw()}
 el('full').onclick=async()=>{if(stage.classList.contains('expanded')){expanded(false);return}if(document.fullscreenElement){await document.exitFullscreen();return}if(document.fullscreenEnabled&&stage.requestFullscreen){try{await stage.requestFullscreen();return}catch(e){}}expanded(true)};
@@ -612,10 +658,10 @@ async function openVideo(id){
   const state=await request('/api/prepare?id='+encodeURIComponent(id),{method:'POST'});
   if(serial!==selection)return;
   const limit=g?g.getParameter(g.MAX_TEXTURE_SIZE):0;
-  if(limit&&Math.max(state.width,state.height)>limit)throw Error('当前设备的全景纹理上限为 '+limit+' 像素，无法显示这段原画视频。');
+  const compatible=limit&&Math.max(state.width,state.height)>limit;
 
   el('playingdetail').textContent=x.date+' · '+x.format+' · '+x.size+' · 原画 '+state.width+'×'+state.height+(state.hdr?' · 源HDR':'');
-  el('playingdetail').textContent += ' · 分段原画';
+  el('playingdetail').textContent += compatible?' · 兼容显示 '+Math.floor(state.width*limit/Math.max(state.width,state.height))+'×'+Math.floor(state.height*limit/Math.max(state.width,state.height)):' · 分段原画';
   el('err').textContent = '正在读取首段…';
   openStream(id, serial);el('play').disabled=false;
  }catch(e){if(serial===selection)el('err').textContent=e.message}

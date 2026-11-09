@@ -301,7 +301,7 @@ class Handler(BaseHTTPRequestHandler):
             elif route.path == "/api/lan":
                 self.json({"instance_id": INSTANCE_ID}, cors=True)
             elif route.path == "/api/health":
-                self.json({"ok": any(r["path"].is_dir() for r in ROOTS.values()), "version": "0.5.0"})
+                self.json({"ok": any(r["path"].is_dir() for r in ROOTS.values()), "version": "0.5.1"})
             elif route.path == "/api/folders":
                 self.json(folder_config())
             elif route.path == "/api/directories":
